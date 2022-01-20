@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# azureDevopsInstance=""
+# patToken=""
+
+docker run --rm \
+    -e AZP_URL=$azureDevopsInstance \
+    -e AZP_TOKEN=$patToken \
+    -e AZP_AGENT_NAME=mydockeragent mauwii/devopsbuildagent:latest
