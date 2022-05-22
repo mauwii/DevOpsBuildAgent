@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN curl -LsS https://aka.ms/InstallAzureCLIDeb | bash \
   && rm -rf /var/lib/apt/lists/*
 
-# Can be 'linux-x64', 'linux-arm64', 'linux-arm', 'rhel.6-x64'.
+# Can be 'linux-x64' or 'linux-arm64'
 ARG targetarch
 ENV TARGETARCH=${targetarch:-linux-x64}
 
