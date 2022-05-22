@@ -2,9 +2,9 @@
 
 # STEP 1 - build images for two architectures
 export DOCKER_DEFAULT_PLATFORM="linux/amd64"
-docker build --build-arg='targetarch=linux-x64' --tag mauwii/devopsbuildagent --tag mauwii/devopsbuildagent:linux-x64 .
+docker build --build-arg='TARGETARCH=linux-x64' --tag mauwii/devopsbuildagent --tag mauwii/devopsbuildagent:linux-x64 .
 export DOCKER_DEFAULT_PLATFORM="linux/arm64"
-docker build --build-arg='targetarch=linux-arm64' --tag mauwii/devopsbuildagent:linux-arm64 .
+docker build --build-arg='TARGETARCH=linux-arm64' --tag mauwii/devopsbuildagent:linux-arm64 .
 
 # STEP 2 push images to registry
 docker push mauwii/devopsbuildagent
