@@ -25,7 +25,7 @@ RUN curl -LsS https://aka.ms/InstallAzureCLIDeb | bash \
 ARG targetarch
 ENV TARGETARCH=${targetarch:-linux-x64}
 
-# Downloading and installing Powershell for specified targetarch (linux-x86 if build-arg was not used)
+# Downloading and installing Powershell for specified targetarch (linux-x64 if build-arg was not used)
 RUN curl -L -o /tmp/powershell.tar.gz "https://github.com/PowerShell/PowerShell/releases/download/v7.2.4/powershell-7.2.4-${TARGETARCH}.tar.gz" \
   && mkdir -p /opt/microsoft/powershell/7 \
   && tar zxf /tmp/powershell.tar.gz -C /opt/microsoft/powershell/7 \
