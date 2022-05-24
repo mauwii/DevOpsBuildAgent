@@ -23,7 +23,7 @@ RUN curl -LsS https://aka.ms/InstallAzureCLIDeb | bash \
 
 # Can be 'linux-x64' or 'linux-arm64'
 ARG TARGETARCH
-ENV TARGETARCH=${TARGETARCH:-linux-x64}
+ENV TARGETARCH="${TARGETARCH:-linux-x64}"
 
 # Downloading and installing Powershell for specified targetarch (linux-x64 if build-arg was not used)
 RUN curl -L -o /tmp/powershell.tar.gz "https://github.com/PowerShell/PowerShell/releases/download/v7.2.4/powershell-7.2.4-${TARGETARCH}.tar.gz" \
@@ -31,6 +31,9 @@ RUN curl -L -o /tmp/powershell.tar.gz "https://github.com/PowerShell/PowerShell/
   && tar zxf /tmp/powershell.tar.gz -C /opt/microsoft/powershell/7 \
   && chmod +x /opt/microsoft/powershell/7/pwsh \
   && ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pws
+
+# Download and Install Pulumi-CLI
+RUN curl -fsSL https://get.pulumi.com | sh
 
 WORKDIR /azp
 
