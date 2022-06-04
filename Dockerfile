@@ -31,7 +31,7 @@ RUN curl -L -o /tmp/powershell.tar.gz \
   && mkdir -p /opt/microsoft/powershell/7 \
   && tar zxf /tmp/powershell.tar.gz -C /opt/microsoft/powershell/7 \
   && chmod +x /opt/microsoft/powershell/7/pwsh \
-  && ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pws
+  && ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh
 
 # Download and Install Pulumi-CLI
 RUN curl -fsSL https://get.pulumi.com | sh \
