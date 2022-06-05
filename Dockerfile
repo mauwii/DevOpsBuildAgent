@@ -1,6 +1,5 @@
-# ARG targetplatform="linux/amd64"
-# FROM --platform="${targetplatform}" ubuntu:20.04
-FROM ubuntu:20.04
+ARG targetplatform="linux/amd64"
+FROM --platform="${targetplatform}" ubuntu:20.04
 RUN DEBIAN_FRONTEND=noninteractive apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
 
@@ -13,7 +12,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommend
   iputils-ping \
   jq \
   lsb-release \
-  software-properties-common
+  software-properties-common \
+  unzip \
+  zip
 
 RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 
