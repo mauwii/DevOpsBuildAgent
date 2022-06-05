@@ -20,7 +20,7 @@ First Thing I will now try to sort out is the problem which is blocking us from 
 /opt/homebrew/Cellar/azure-cli/2.37.0/libexec/bin/python: Mach-O 64-bit executable arm64
 ```
 
-So I will not waste any more time to write some incomplete changelogs or anything and directly jump back to action while you cross your fingers that it will work out :godmode:
+So I will not waste any more time to write some incomplete changelogs or anything and directly jump back to action while you cross your fingers that it will work out :godmode: Meanwhile my Apple Silicon Friends should be fine by using the x64 image (f.e. by running the container with `run-local.sh x64`)
 
 What follows is the original Readme :neckbeard:
 
