@@ -1,4 +1,7 @@
-FROM ubuntu:18.04
+# Imho it makes things easier with  Multiarch-Containers
+# when you can switch the Image from commandline 🤓
+ARG baseimage="amd64/ubuntu:18.04"
+FROM "${baseimage}"
 
 # To make it easier for build and release pipelines to run apt-get,
 # configure apt to not require confirmation (assume the -y argument by default)
@@ -18,9 +21,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libssl1.0 \
   && rm -rf /var/lib/apt/lists/*
 
-# Can be 'x64' or 'arm64'
+# Tested with 'linux-x64' and 'linux-arm64' so far, but should also work with 'linux-arm' and 'rhel.6-x64'
 ARG targetarch
-ENV TARGETARCH="linux-${targetarch:-x64}"
+ENV TARGETARCH="${targetarch:-linux-x64}"
 
 # Downloading and installing Powershell for specified targetarch (linux-x64 if build-arg was not used)
 RUN curl -L -o /tmp/powershell.tar.gz \
@@ -30,28 +33,48 @@ RUN curl -L -o /tmp/powershell.tar.gz \
   && chmod +x /opt/microsoft/powershell/7/pwsh \
   && ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh
 
-# Download and Install Pulumi-CLI
+# Install Pulumi-CLI
 RUN curl -fsSL https://get.pulumi.com | sh \
   && ln -s /root/.pulumi/bin/pulumi /usr/bin/pulumi
 
+# Install Python3.8
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3.8 \
     python3.8-dev \
     python3.8-venv \
     python3-pip \
-  && python3.8 -m pip install --upgrade pip \
-  && rm -rf /var/lib/apt/lists/* \
-  && mkdir -p /azp/_work/_tool/Python/3.8.0 \
-  && cd /azp/_work/_tool/Python/3.8.0 \
-  && python3.8 -m venv x64
+  && rm -rf /var/lib/apt/lists/*
 
-# Download and install Azure-CLI
+# Install Azure-CLI
 RUN curl -LsS https://aka.ms/InstallAzureCLIDeb | bash \
   && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /azp
+# Create Python3.8.0 tool directory and update pip
+RUN python3.8 -m pip install --upgrade pip \
+  && mkdir -p /azp/_work/_tool/Python/3.8.0 \
+  && cd /azp/_work/_tool/Python/3.8.0 \
+  && python3.8 -m venv x64 \
+  && touch x64.complete
 
+# Create Python3.6.9 tool directory and update pip
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends python3-venv \
+  && python3.6 -m pip install --upgrade pip \
+  && mkdir -p /azp/_work/_tool/Python/3.6.9 \
+  && cd /azp/_work/_tool/Python/3.6.9 \
+  && python3.6 -m venv x64 \
+  && touch x64.complete \
+  && rm -rf /var/lib/apt/lists/*
+  # && toolpath=$(python3 -V) \
+  # && echo ${toolpath/ //} \
+  # && mkdir -p ${toolpath/ //} \
+  # && cd ${toolpath/ //} \
+
+# clean tmp Folder
+RUN rm -Rf /tmp/**
+
+WORKDIR /azp
 COPY ./start.sh .
 RUN chmod +x start.sh
 
-ENTRYPOINT ["./start.sh"]
+ENTRYPOINT [ "./start.sh" ]
