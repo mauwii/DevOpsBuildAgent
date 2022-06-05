@@ -10,9 +10,10 @@ export basetag='mauwii/devopsbuildagent'
 build_image() {
   export DOCKER_DEFAULT_PLATFORM="${baseos}/${targetproc}"
   docker build \
+    --build-arg="targetplatform=${baseos}/${targetproc}" \
     --build-arg="targetarch=${baseos}-${targetarch}" \
-    --build-arg="baseimage=${targetproc}/${baseDistro}:${baseVersion}" \
-    --tag "${basetag}:${baseDistro}.${baseVersion}.${targetproc}" .
+    --tag "${basetag}:${baseDistro}.${baseVersion}.${targetproc}" \
+    --file=Dockerfile.1804 .
   docker push "${basetag}:${baseDistro}.${baseVersion}.${targetproc}"
 }
 
@@ -22,11 +23,11 @@ export targetproc='amd64'
 build_image
 
 export targetarch='arm64'
-export targetproc="${targetarch}v8"
+export targetproc="${targetarch}"
 build_image
 
 # STEP 3 - create and push manifest
-docker manifest create --amend "${basetag}:latest" "${basetag}:${baseDistro}.${baseVersion}.amd64" "${basetag}:${baseDistro}.${baseVersion}.arm64v8"
+docker manifest create --amend "${basetag}:latest" "${basetag}:${baseDistro}.${baseVersion}.amd64" "${basetag}:${baseDistro}.${baseVersion}.arm64"
 docker manifest annotate "${basetag}:latest" "${basetag}:${baseDistro}.${baseVersion}.amd64" --os "${baseos}" --arch amd64
-docker manifest annotate "${basetag}:latest" "${basetag}:${baseDistro}.${baseVersion}.arm64v8" --os "${baseos}" --arch arm64 --variant v8
+docker manifest annotate "${basetag}:latest" "${basetag}:${baseDistro}.${baseVersion}.arm64" --os "${baseos}" --arch arm64 --variant v8
 docker manifest push --purge "${basetag}:latest"
