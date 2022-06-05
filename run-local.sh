@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export build="ubuntu.18.04"
+export build="ubuntu.20.04"
 
 # if on Apple M1 but still want to use amd64, just add x64 to script execution
 # ./run-local.sh x64 - then M1 will be ignored
@@ -16,4 +16,4 @@ fi
 echo "using tag ${tag}"
 docker run --rm \
   --env-file ./.env \
-  "mauwii/devopsbuildagent:${tag}"
+  "docker.io/mauwii/devopsbuildagent:${tag}"
