@@ -1,5 +1,29 @@
 # DevOpsBuildAgent
 
+# NEWS FLASH: Updated to Ubuntu 20.04
+
+## What's new
+
+Well, besides the 4 Year release-date difference (yes, 18.04 is LTS, but still ... :trollface:) there has been much going on. For Example we are not bound to some very outdated Python Versions anymore, since the shipped Version of Python is already 3.8.10 (vs 3.6.9), which I obviously enabled again to be compatible with the usePythonVersion Task.
+
+First Thing I will now try to sort out is the problem which is blocking us from using a ARM64 Base Image, which looks to me like it is caused by the Version of Azure-CLI, which should be fixable since my Macbook tells me it is using a arm64 Version:
+
+``` sh
+ ~  cat $(which az)
+───────┬───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+       │ File: /opt/homebrew/bin/az
+───────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   1   │ #!/usr/bin/env bash
+   2   │ AZ_INSTALLER=HOMEBREW /opt/homebrew/Cellar/azure-cli/2.37.0/libexec/bin/python -m azure.cli "$@"
+───────┴───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ ~  file /opt/homebrew/Cellar/azure-cli/2.37.0/libexec/bin/python
+/opt/homebrew/Cellar/azure-cli/2.37.0/libexec/bin/python: Mach-O 64-bit executable arm64
+```
+
+So I will not waste any more time to write some incomplete changelogs or anything and directly jump back to action while you cross your fingers that it will work out :godmode:
+
+What follows is the original Readme :neckbeard:
+
 ## What
 
 This is a Dockerimage to create and run a Linux based Agent for Azure-DevOps which initially got created as described [here](https://docs.microsoft.com/azure/devops/pipelines/agents/docker?view=azure-devops#linux).
