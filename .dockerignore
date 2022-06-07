@@ -1,4 +1,6 @@
 .vscode
+.dccache
 build.sh
-run.sh
+build-1804.sh
+run-local.sh
 .envrc
