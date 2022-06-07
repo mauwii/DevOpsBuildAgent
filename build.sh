@@ -49,7 +49,7 @@ build_image() {
   && builtTags+=("${tag}") \
   && builtPlatformOs+=("${dockerdefaultplatformos:-$baseos}") \
   && builtPlatformArch+=("${platformarch}") \
-  && [[ $nodist -ne 1 ]] && docker push ${tag}
+  && [[ $nodist -ne 1 ]] && docker push ${tag} || echo
 }
 
 if [[ $noamd64 -ne 1 ]]; then
