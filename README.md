@@ -22,6 +22,52 @@ First Thing I will now try to sort out is the problem which is blocking us from 
 
 So I will not waste any more time to write some incomplete changelogs or anything and directly jump back to action while you cross your fingers that it will work out :godmode: Meanwhile my Apple Silicon Friends should be fine by using the x64 image (f.e. by running the container with `run-local.sh x64`)
 
+## buildx
+
+There is a new experimental Feature in Docker to build Multiarch Containers, it could be used like:
+
+```bash
+docker buildx build \
+  --platform linux/amd64,linux/arm64/v8 \
+  -t mauwii/devopsbuildagent:latest \
+  --push .
+```
+
+But since Azure-DevOps is not supporting it yet, this is currently no option for me.
+
+## azure-cli in arm64
+
+Since the Installation Script (`curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash`) unfortunatelly does not support arm64 architecture, I tried to install it manually.
+
+My first attempt was to create a Stage in the Dockerfile out of the [manual installation steps](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt#option-2-step-by-step-installation-instructions), which did not work out at all. If you are curious, it looked like this:
+
+```Docker
+RUN DEBIAN_FRONTEND=noninteractive apt-get update \
+  && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends apt-get install ca-certificates curl apt-transport-https lsb-release gnupg \
+  && curl -sL https://packages.microsoft.com/keys/microsoft.asc| gpg --dearmor| tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null \
+  && AZ_REPO=$(lsb_release -cs) \
+  && echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main"| tee /etc/apt/sources.list.d/azure-cli.list \
+  && DEBIAN_FRONTEND=noninteractive apt-get update \
+  && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends apt-get install azure-cli
+```
+
+After experimenting a bit, I came to a solution where I just installed azure-cli via pip, which I tested yet to be working in x64 as well as arm64:
+
+```Docker
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release \
+    python3.8-dev \
+    python3-pip \
+    gcc \
+  && pip install --upgrade pip setuptools wheel azure-cli
+```
+
+---
+
 What follows is the original Readme :neckbeard:
 
 ## What
