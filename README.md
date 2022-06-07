@@ -22,6 +22,23 @@ First Thing I will now try to sort out is the problem which is blocking us from 
 
 So I will not waste any more time to write some incomplete changelogs or anything and directly jump back to action while you cross your fingers that it will work out :godmode: Meanwhile my Apple Silicon Friends should be fine by using the x64 image (f.e. by running the container with `run-local.sh x64`)
 
+## Tag
+
+The Tag of the Build Agent's Image now contains a lot of useful Information. Let's look at a example first:
+
+```text
+mauwii/devopsbuildagent:linux.ubuntu.20.04.arm64.x64
+< 1  >/<--    2     -->:< 3 >.<  4 >.< 5 >.< 6 >.<7>
+```
+
+1. The first part is the username of the Creator
+2. followed by the image name
+3. Base-Image OS
+4. Base-Image Distribution
+5. Distribution Release
+6. Base-Image Architecture
+7. Target Architecture
+
 ## buildx
 
 There is a new experimental Feature in Docker to build Multiarch Containers, it could be used like:
@@ -33,7 +50,7 @@ docker buildx build \
   --push .
 ```
 
-But since Azure-DevOps is not supporting it yet, this is currently no option for me.
+But since Azure-DevOps is not supporting it yet, this is currently no option for me. Hope this will arrive soon, since it is looking pretty good after some local testing.
 
 ## azure-cli in arm64
 
