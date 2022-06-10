@@ -1,6 +1,5 @@
-ARG platformos
-ARG platformarch
-FROM --platform=${platformos:-linux}/${platformarch:-amd64} ubuntu:20.04
+ARG BASEARCH
+FROM ${BASEARCH:-amd64}/ubuntu:20.04
 
 RUN echo "APT::Get::Assume-Yes \"true\";" > /etc/apt/apt.conf.d/90assumeyes
 RUN DEBIAN_FRONTEND=noninteractive apt-get update

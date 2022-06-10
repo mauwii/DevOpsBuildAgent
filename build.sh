@@ -39,11 +39,12 @@ export builtPlatformArch=()
 
 # create build function
 build_image() {
-  export DOCKER_DEFAULT_PLATFORM="${dockerdefaultplatformos:-$baseos}/${dockerdefaultplatformarch}"
-  export tag="${dockerrepository}:${dockerdefaultplatformos:-$baseos}.${baseDistro}.${baseVersion}.${dockerdefaultplatformarch}.${targetproc}"
+  export DOCKER_DEFAULT_PLATFORM="${dockerdefaultplatformos:-$baseos}/${BASEARCH}"
+  export tag="${dockerrepository}:${dockerdefaultplatformos:-$baseos}.${baseDistro}.${baseVersion}.${BASEARCH}.${targetproc}"
   echo -e "going to build ${tag}\n"
   docker build \
     --platform="${dockerdefaultplatformos:-$baseos}/${platformarch}" \
+    --build-arg="BASEARCH=${BASEARCH}" \
     --build-arg="targetarch=${targetos:-$baseos}-${targetproc}" \
     --tag "${tag}" . \
   && builtTags+=("${tag}") \
@@ -53,14 +54,14 @@ build_image() {
 }
 
 if [[ $noamd64 -ne 1 ]]; then
-  export dockerdefaultplatformarch='amd64'
+  export BASEARCH='amd64'
   export platformarch='x86_64'
   export targetproc='x64'
   build_image
 fi
 
 if [[ $noarm64 -ne 1 ]]; then
-  export dockerdefaultplatformarch='arm64'
+  export BASEARCH='arm64v8'
   export platformarch='arm64'
   export targetproc='x64'
   build_image
