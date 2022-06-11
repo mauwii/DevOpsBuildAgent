@@ -27,7 +27,7 @@ AZP_URL=<Azure DevOps instance>
 AZP_TOKEN=<PAT token>
 ```
 
-Then you can use the included script `run-local.sh` to run the container, or build it by yourself via `build.sh` or manually.
+Then you can use the included script `run-local.sh` to run the container, or build it by yourself via `build.sh` or manually. For more advanced methods to run the agent, like in a Kubernetes, just have a look in the [official Docs](https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/docker?view=azure-devops#use-azure-kubernetes-service-cluster).
 
 ### necessary env
 
