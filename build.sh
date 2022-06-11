@@ -39,16 +39,18 @@ export builtPlatformArch=()
 
 # create build function
 build_image() {
-  export DOCKER_DEFAULT_PLATFORM="${dockerdefaultplatformos:-$baseOS}/${BASEARCH}"
-  export tag="${dockerrepository}:${dockerdefaultplatformos:-$baseOS}.${baseDistro}.${baseVersion}.${BASEARCH}.${targetproc}"
+  export DOCKER_DEFAULT_PLATFORM="${dockerdefaultplatformos:-$baseOS}/${BASEARCH}${BASEARCHVARIANT:+/$BASEARCHVARIANT}"
+  export tag="${dockerrepository}:${dockerdefaultplatformos:-$baseOS}.${baseDistro}.${baseVersion}.${BASEARCH}${BASEARCHVARIANT:+$BASEARCHVARIANT}"
   echo -e "going to build ${tag}\n"
   docker build \
+    --platform="${baseOS}/${BASEARCH}${BASEARCHVARIANT:+/$BASEARCHVARIANT}" \
     --build-arg="BASEARCH=${BASEARCH}${BASEARCHVARIANT:+$BASEARCHVARIANT}" \
-    --build-arg="targetarch=${targetos:-$baseOS}-${targetproc}" \
+    --build-arg="targetos=${targetos:-$baseOS}" \
+    --build-arg="targetproc=${targetproc}" \
     --tag "${tag}" . \
   && builtTags+=("${tag}") \
   && builtPlatformOs+=("${dockerdefaultplatformos:-$baseOS}") \
-  && builtPlatformArch+=("${BASEARCH}") \
+  && builtPlatformArch+=("${BASEARCH:+--arch $BASEARCH} ${BASEARCHVARIANT:+--variant $BASEARCHVARIANT}") \
   && [[ $nodist -ne 1 ]] && docker push ${tag} || echo
 }
 
@@ -63,7 +65,7 @@ if [[ $noarm64 -ne 1 ]]; then
   export BASEARCH='arm64'
   export BASEARCHVARIANT='v8'
   export platformarch='arm64'
-  export targetproc='x64'
+  export targetproc="${BASEARCH}"
   build_image
 fi
 
@@ -75,7 +77,7 @@ if [[ $nodist -ne 1 ]]; then
   docker manifest create "${dockerrepository}:latest" "${builtTags[@]}"
   i=1
   for tag in "${builtTags[@]}"; do
-    docker manifest annotate "${dockerrepository}:latest" "${tag}" --os "${builtPlatformOs[$i]}" --arch "${builtPlatformArch[$i]}"
+    docker manifest annotate "${dockerrepository}:latest" "${tag}" --os "${builtPlatformOs[$i]}" ${builtPlatformArch[$i]}
     i=${i}+1
   done
   docker manifest push --purge "${dockerrepository}:latest"
