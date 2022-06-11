@@ -26,7 +26,7 @@ for argument in "$@"; do
 done
 
 # Declare base-env
-export baseos='linux'
+export baseOS='linux'
 export baseDistro='ubuntu'
 export baseVersion='20.04'
 export dockerRegistry='docker.io'
@@ -39,17 +39,16 @@ export builtPlatformArch=()
 
 # create build function
 build_image() {
-  export DOCKER_DEFAULT_PLATFORM="${dockerdefaultplatformos:-$baseos}/${BASEARCH}"
-  export tag="${dockerrepository}:${dockerdefaultplatformos:-$baseos}.${baseDistro}.${baseVersion}.${BASEARCH}.${targetproc}"
+  export DOCKER_DEFAULT_PLATFORM="${dockerdefaultplatformos:-$baseOS}/${BASEARCH}"
+  export tag="${dockerrepository}:${dockerdefaultplatformos:-$baseOS}.${baseDistro}.${baseVersion}.${BASEARCH}.${targetproc}"
   echo -e "going to build ${tag}\n"
   docker build \
-    --platform="${dockerdefaultplatformos:-$baseos}/${platformarch}" \
-    --build-arg="BASEARCH=${BASEARCH}" \
-    --build-arg="targetarch=${targetos:-$baseos}-${targetproc}" \
+    --build-arg="BASEARCH=${BASEARCH}${BASEARCHVARIANT:+$BASEARCHVARIANT}" \
+    --build-arg="targetarch=${targetos:-$baseOS}-${targetproc}" \
     --tag "${tag}" . \
   && builtTags+=("${tag}") \
-  && builtPlatformOs+=("${dockerdefaultplatformos:-$baseos}") \
-  && builtPlatformArch+=("${platformarch}") \
+  && builtPlatformOs+=("${dockerdefaultplatformos:-$baseOS}") \
+  && builtPlatformArch+=("${BASEARCH}") \
   && [[ $nodist -ne 1 ]] && docker push ${tag} || echo
 }
 
@@ -61,7 +60,8 @@ if [[ $noamd64 -ne 1 ]]; then
 fi
 
 if [[ $noarm64 -ne 1 ]]; then
-  export BASEARCH='arm64v8'
+  export BASEARCH='arm64'
+  export BASEARCHVARIANT='v8'
   export platformarch='arm64'
   export targetproc='x64'
   build_image
