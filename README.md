@@ -27,8 +27,8 @@ So I will not waste any more time to write some incomplete changelogs or anythin
 The Tag of the Build Agent's Image now contains a lot of useful Information. Let's look at a example first:
 
 ```text
-mauwii/devopsbuildagent:linux.ubuntu.20.04.arm64.x64
-< 1  >/<--    2     -->:< 3 >.<  4 >.< 5 >.< 6 >.<7>
+mauwii/devopsbuildagent:linux.ubuntu.20.04.arm64
+< 1  >/<--    2     -->:< 3 >.<  4 >.< 5 >.< 6 >
 ```
 
 1. The first part is the username of the Creator
@@ -37,7 +37,6 @@ mauwii/devopsbuildagent:linux.ubuntu.20.04.arm64.x64
 4. Base-Image Distribution
 5. Distribution Release
 6. Base-Image Architecture
-7. Target Architecture
 
 ## buildx
 
