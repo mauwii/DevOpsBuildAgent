@@ -21,9 +21,6 @@ export dockerimage='devopsbuildagent'
 export targetproc='x64'
 export dockerrepository="${dockerhubuser}/${dockerimage}"
 
-
-# if on Apple M1 but still want to use amd64, just add x64 to script execution
-# ./run-local.sh x64 - then M1 will be ignored
 if [[ "$(arch)" = "arm64" ]] && [[ $forcex64 -ne 1 ]]; then
   export dockerdefaultplatformarch='arm64'
   export dockerdefaultplatformarchvariant='v8'
