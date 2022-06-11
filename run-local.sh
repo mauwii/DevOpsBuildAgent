@@ -33,7 +33,7 @@ else
 fi
 
 export DOCKER_DEFAULT_PLATFORM="${baseos}/${dockerdefaultplatformarch}${dockerdefaultplatformarchvariant:+/$dockerdefaultplatformarchvariant}"
-export tag="${baseos}.${baseDistro}.${baseVersion}.${dockerdefaultplatformarch}${dockerdefaultplatformarchvariant:+$dockerdefaultplatformarchvariant}.${targetproc}${devtag:+.$devtag}"
+export tag="${baseos}.${baseDistro}.${baseVersion}.${dockerdefaultplatformarch}${dockerdefaultplatformarchvariant:+$dockerdefaultplatformarchvariant}${devtag:+.$devtag}"
 export dockerimage="${dockerrepository}:${tag}"
 
 echo -e "going to run ${dockerimage}\n"
