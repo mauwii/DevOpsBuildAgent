@@ -1,90 +1,6 @@
 # DevOpsBuildAgent
 
-# NEWS FLASH: Updated to Ubuntu 20.04
-
-## What's new
-
-Well, besides the 4 Year release-date difference (yes, 18.04 is LTS, but still ... :trollface:) there has been much going on. For Example we are not bound to some very outdated Python Versions anymore, since the shipped Version of Python is already 3.8.10 (vs 3.6.9), which I obviously enabled again to be compatible with the usePythonVersion Task.
-
-First Thing I will now try to sort out is the problem which is blocking us from using a ARM64 Base Image, which looks to me like it is caused by the Version of Azure-CLI, which should be fixable since my Macbook tells me it is using a arm64 Version:
-
-``` sh
- ~  cat $(which az)
-───────┬───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-       │ File: /opt/homebrew/bin/az
-───────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-   1   │ #!/usr/bin/env bash
-   2   │ AZ_INSTALLER=HOMEBREW /opt/homebrew/Cellar/azure-cli/2.37.0/libexec/bin/python -m azure.cli "$@"
-───────┴───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
- ~  file /opt/homebrew/Cellar/azure-cli/2.37.0/libexec/bin/python
-/opt/homebrew/Cellar/azure-cli/2.37.0/libexec/bin/python: Mach-O 64-bit executable arm64
-```
-
-So I will not waste any more time to write some incomplete changelogs or anything and directly jump back to action while you cross your fingers that it will work out :godmode: Meanwhile my Apple Silicon Friends should be fine by using the x64 image (f.e. by running the container with `run-local.sh x64`)
-
-## Tag
-
-The Tag of the Build Agent's Image now contains a lot of useful Information. Let's look at a example first:
-
-```text
-mauwii/devopsbuildagent:linux.ubuntu.20.04.arm64
-< 1  >/<--    2     -->:< 3 >.<  4 >.< 5 >.< 6 >
-```
-
-1. The first part is the username of the Creator
-2. followed by the image name
-3. Base-Image OS
-4. Base-Image Distribution
-5. Distribution Release
-6. Base-Image Architecture
-
-## buildx
-
-There is a new experimental Feature in Docker to build Multiarch Containers, it could be used like:
-
-```bash
-docker buildx build \
-  --platform linux/amd64,linux/arm64/v8 \
-  -t mauwii/devopsbuildagent:latest \
-  --push .
-```
-
-But since Azure-DevOps is not supporting it yet, this is currently no option for me. Hope this will arrive soon, since it is looking pretty good after some local testing.
-
-## azure-cli in arm64
-
-Since the Installation Script (`curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash`) unfortunatelly does not support arm64 architecture, I tried to install it manually.
-
-My first attempt was to create a Stage in the Dockerfile out of the [manual installation steps](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt#option-2-step-by-step-installation-instructions), which did not work out at all. If you are curious, it looked like this:
-
-```Docker
-RUN DEBIAN_FRONTEND=noninteractive apt-get update \
-  && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends apt-get install ca-certificates curl apt-transport-https lsb-release gnupg \
-  && curl -sL https://packages.microsoft.com/keys/microsoft.asc| gpg --dearmor| tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null \
-  && AZ_REPO=$(lsb_release -cs) \
-  && echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main"| tee /etc/apt/sources.list.d/azure-cli.list \
-  && DEBIAN_FRONTEND=noninteractive apt-get update \
-  && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends apt-get install azure-cli
-```
-
-After experimenting a bit, I came to a solution where I just installed azure-cli via pip, which I tested yet to be working in x64 as well as arm64:
-
-```Docker
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    gnupg \
-    lsb-release \
-    python3.8-dev \
-    python3-pip \
-    gcc \
-  && pip install --upgrade pip setuptools wheel azure-cli
-```
-
----
-
-What follows is the original Readme :neckbeard:
+[![Build Status](https://dev.azure.com/Mauwii/azure-pipelines-with-github-repo/_apis/build/status/devopsbuildagent.yml?branchName=main)](https://dev.azure.com/Mauwii/azure-pipelines-with-github-repo/_build/latest?definitionId=15&branchName=main)
 
 ## What
 
@@ -92,16 +8,15 @@ This is a Dockerimage to create and run a Linux based Agent for Azure-DevOps whi
 
 Since the poor Features of this Image where pretty unsatisfying, I added some more:
 
-* Powershell
-* Pulumi-CLI
-* Python 3.8.0
-  * even made it work with the "UsePythonVersion@0" Task :feelsgood:
-* Python 3.6.9 compatibility for "UsePythonVersion@0" Task :godmode:
-* tested yet on x64 and ARM64v8, while the Task "UsePythonVersion@0" only works on x64 :sob:
+* Azure-CLI MultiArch-compatibility
+* Powershell v7.2.4
+* Python 3.8.10 with added compatibility for "UsePythonVerison@0" Task
+* Python 3.9.5 compatibility for "UsePythonVersion@0" Task
+* MultiArch Builds for x64 and arm64v8
 
 ## Why
 
-Helpful if you cannot use the public available Build-Agents or any other Reason to run a private build-agent.
+The Agent can be very useful if you can not use the public available Build-Agents or any other Reason to run a private build-agent.
 
 ## How
 
@@ -124,3 +39,20 @@ Then you can use the included script `run-local.sh` to run the container, or bui
 * `AZP_AGENT_NAME`: Agent name (default value: the container hostname).
 * `AZP_POOL`: Agent pool name (default value: Default)
 * `AZP_WORK`: Work directory (default value: _work)
+
+## Tag
+
+The Tag of the Build Agent's Image now contains a lot of useful Information. Let's look at a example first:
+
+```text
+mauwii/devopsbuildagent:linux.ubuntu.20.04.arm64v8.142
+< 1  >/<--    2     -->:< 3 >.<  4 >.< 5 >.<  6  >.<7>
+```
+
+1. The first part is the username of the Creator
+2. followed by the image name
+3. Base-Image OS
+4. Base-Image Distribution
+5. Distribution Release
+6. Base-Image Architecture
+7. BuildId so that you can stick to a Version after new a new release has come
