@@ -5,36 +5,39 @@ set -e
 for argument in "$@"; do
   # Run Dev Container
   if [[ "$argument" == "--dev" ]]; then
-    export devtag="dev"
+    devtag="dev"
+  fi
+  # Use tag "local"
+  if [[ "$argument" == "--local" ]]; then
+    devtag="local"
   fi
   # Force execution of x64 Container
   if [[ "$argument" == "--x64" ]]; then
-    export forcex64="1"
+    forcex64="1"
   fi
 done
-export baseos='linux'
-export baseDistro='ubuntu'
-export baseVersion='20.04'
-export dockerregistry='docker.io'
-export dockerhubuser='mauwii'
-export dockerimage='devopsbuildagent'
-export targetproc='x64'
-export dockerrepository="${dockerhubuser}/${dockerimage}"
+
+baseos='linux'
+baseDistro='ubuntu'
+baseVersion='20.04'
+dockerregistry='docker.io'
+dockerhubuser='mauwii'
+dockerimage='devopsbuildagent'
+dockerrepository="${dockerhubuser}/${dockerimage}"
 
 if [[ "$(arch)" = "arm64" ]] && [[ $forcex64 -ne 1 ]]; then
-  export dockerdefaultplatformarch='arm64'
-  export dockerdefaultplatformarchvariant='v8'
-  export targetproc='arm64'
+  dockerdefaultplatformarch='arm64'
+  dockerdefaultplatformarchvariant='v8'
+  targetproc='arm64'
 else
-  export dockerdefaultplatformarch='amd64'
+  dockerdefaultplatformarch='amd64'
+  targetproc='x64'
 fi
 
-export DOCKER_DEFAULT_PLATFORM="${baseos}/${dockerdefaultplatformarch}${dockerdefaultplatformarchvariant:+/$dockerdefaultplatformarchvariant}"
-export tag="${baseos}.${baseDistro}.${baseVersion}.${dockerdefaultplatformarch}${dockerdefaultplatformarchvariant:+$dockerdefaultplatformarchvariant}${devtag:+.$devtag}"
-export dockerimage="${dockerrepository}:${tag}"
+DOCKER_DEFAULT_PLATFORM="${baseos}/${dockerdefaultplatformarch}${dockerdefaultplatformarchvariant:+/$dockerdefaultplatformarchvariant}"
+tag="${baseos}.${baseDistro}.${baseVersion}.${dockerdefaultplatformarch}${dockerdefaultplatformarchvariant:+$dockerdefaultplatformarchvariant}${devtag:+.$devtag}"
+dockerimage="${dockerrepository}:${tag}"
 
 echo -e "going to run ${dockerimage}\n"
 
-docker run --rm \
-  --env-file ./.env \
-  "${dockerrepository}:${tag}"
+docker run --rm --env-file "./.env" "${dockerrepository}:${tag}"
