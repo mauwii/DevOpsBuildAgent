@@ -23,14 +23,16 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommend
   unzip \
   zip
 
-# Install Azure-CLI
+# Install Azure-CLI v2.37.0
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
     gnupg \
     python3.8-dev \
     python3-pip \
     gcc \
   && pip3 install --upgrade pip --force \
-  && pip3 install azure-cli==2.37.0
+  && pip3 install azure-cli==2.37.0 \
+  && DEBIAN_FRONTEND=noninteractive apt-get remove -y python3-pip \
+  && DEBIAN_FRONTEND=noninteractive apt-get autoremove -y
 
 # Downloading and installing Powershell for specified targetproc (linux-x64 if build-arg was not used)
 RUN curl -L -o /tmp/powershell.tar.gz "https://github.com/PowerShell/PowerShell/releases/download/v7.2.4/powershell-7.2.4-${TARGETARCH}.tar.gz" \
