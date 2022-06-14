@@ -8,8 +8,10 @@ This is a Dockerimage to create and run a Linux based Agent for Azure-DevOps whi
 
 Since the poor Features of this Image where pretty unsatisfying, I added some more:
 
-* Azure-CLI MultiArch-compatibility
+* add zip/unzip packages to enable corresponding tasks
+* Azure-CLI v2.37.0 with MultiArch-compatibility
 * Powershell v7.2.4
+* Azure Powershell Module v8.0.0
 * Python 3.8.10 with added compatibility for "UsePythonVerison@0" Task
 * Python 3.9.5 compatibility for "UsePythonVersion@0" Task
 * MultiArch Builds for x64 and arm64v8
