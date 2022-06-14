@@ -34,12 +34,16 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommend
   && DEBIAN_FRONTEND=noninteractive apt-get remove -y python3-pip \
   && DEBIAN_FRONTEND=noninteractive apt-get autoremove -y
 
-# Downloading and installing Powershell for specified targetproc (linux-x64 if build-arg was not used)
+# Downloading and installing Powershell for specified targetproc (linux-x64 per default)
 RUN curl -L -o /tmp/powershell.tar.gz "https://github.com/PowerShell/PowerShell/releases/download/v7.2.4/powershell-7.2.4-${TARGETARCH}.tar.gz" \
   && mkdir -p /opt/microsoft/powershell/7 \
   && tar zxf /tmp/powershell.tar.gz -C /opt/microsoft/powershell/7 \
   && chmod +x /opt/microsoft/powershell/7/pwsh \
   && ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh
+
+# Install Azure Powershell Module v8.0.0
+RUN /usr/bin/pwsh -Command Set-PSRepository -Name PSGallery -InstallationPolicy Trusted \
+  && /usr/bin/pwsh -Command Install-Module -Name Az -RequiredVersion 8.0.0 -Scope AllUsers
 
 # Create Python3.8.10 tool directory, upgrade pip
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
