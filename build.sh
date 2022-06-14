@@ -23,6 +23,10 @@ for argument in "$@"; do
     export updateReadme=1
     echo -e "Will update Readme if previous Steps did not fail\n"
   fi
+  # can be used to not loose current prod/dev containers built by pipeline
+  if [[ "$argument" == "--local" ]]; then
+    export DEVTAG=local
+  fi
 done
 
 # Declare base-env
@@ -39,8 +43,8 @@ export builtPlatformArch=()
 
 # create build function
 build_image() {
-  export DOCKER_DEFAULT_PLATFORM="${dockerdefaultplatformos:-$baseOS}/${BASEARCH}${BASEARCHVARIANT:+/$BASEARCHVARIANT}"
-  export tag="${dockerrepository}:${dockerdefaultplatformos:-$baseOS}.${baseDistro}.${baseVersion}.${BASEARCH}${BASEARCHVARIANT:+$BASEARCHVARIANT}"
+  export DOCKER_DEFAULT_PLATFORM="${dockerdefaultplatformos:-$baseOS}/${BASEARCH}${BASEARCHVARIANT:+$BASEARCHVARIANT}"
+  export tag="${dockerrepository}:${dockerdefaultplatformos:-$baseOS}.${baseDistro}.${baseVersion}.${BASEARCH}${BASEARCHVARIANT:+$BASEARCHVARIANT}${DEVTAG:+.$DEVTAG}"
   echo -e "going to build ${tag}\n"
   docker build \
     --platform="${baseOS}/${BASEARCH}${BASEARCHVARIANT:+/$BASEARCHVARIANT}" \
@@ -56,7 +60,7 @@ build_image() {
 
 if [[ $noamd64 -ne 1 ]]; then
   export BASEARCH='amd64'
-  export platformarch='x86_64'
+  # export platformarch='x86_64'
   export targetproc='x64'
   build_image
 fi
@@ -64,7 +68,7 @@ fi
 if [[ $noarm64 -ne 1 ]]; then
   export BASEARCH='arm64'
   export BASEARCHVARIANT='v8'
-  export platformarch='arm64'
+  # export platformarch='arm64'
   export targetproc="${BASEARCH}"
   build_image
 fi
