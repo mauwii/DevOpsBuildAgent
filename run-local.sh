@@ -3,15 +3,15 @@ set -e
 
 # check command arguments if exists
 for argument in "$@"; do
-  # Run Dev Container
-  if [[ "$argument" == "--dev" ]]; then
-    devtag="dev"
+  # Run Dev/local Container
+  if [[ "$argument" == "--dev" ]] || [[ "$argument" == "--local" ]]; then
+      if [[ ! -z $devtag ]];then
+      echo "cannot use arguments --dev and --local together"
+      exit -1
+    else
+      devtag="${argument/--/}"
+    fi
   fi
-  # Use tag "local"
-  if [[ "$argument" == "--local" ]]; then
-    devtag="local"
-  fi
-  # Force execution of x64 Container
   if [[ "$argument" == "--x64" ]]; then
     forcex64="1"
   fi
