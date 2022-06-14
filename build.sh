@@ -58,17 +58,14 @@ build_image() {
   && [[ $nodist -ne 1 ]] && docker push ${tag} || echo
 }
 
+# Build amd64 image if not disabled
 if [[ $noamd64 -ne 1 ]]; then
-  BASEARCH='amd64'
-  targetproc='x64'
-  build_image
+  BASEARCH='amd64' targetproc='x64' build_image
 fi
 
+# build arm64v8 if not disabled
 if [[ $noarm64 -ne 1 ]]; then
-  BASEARCH='arm64'
-  BASEARCHVARIANT='v8'
-  targetproc="${BASEARCH}"
-  build_image
+  BASEARCH='arm64' BASEARCHVARIANT='v8' targetproc="${BASEARCH}" build_image
 fi
 
 # Output built Images
