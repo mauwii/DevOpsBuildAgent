@@ -1,6 +1,6 @@
 # DevOpsBuildAgent
 
-[![Build Status](https://dev.azure.com/Mauwii/azure-pipelines-with-github-repo/_apis/build/status/devopsbuildagent.yml?branchName=main)](https://dev.azure.com/Mauwii/azure-pipelines-with-github-repo/_build/latest?definitionId=15&branchName=main)
+[![Build Status](https://dev.azure.com/Mauwii/azure-pipelines-with-github-repo/_apis/build/status/devopsbuildagent.yml?branchName=main)](https://dev.azure.com/Mauwii/azure-pipelines-with-github-repo/_build/latest?definitionId=20&branchName=main)
 
 ## What
 
