@@ -43,19 +43,19 @@ builtPlatformArch=()
 
 # create build function
 build_image() {
-  DOCKER_DEFAULT_PLATFORM="${dockerdefaultplatformos:-$baseOS}/${BASEARCH}${BASEARCHVARIANT:+$BASEARCHVARIANT}"
+  DOCKER_DEFAULT_PLATFORM="${dockerdefaultplatformos:-$baseOS}/${BASEARCH}${BASEARCHVARIANT:+/$BASEARCHVARIANT}"
   tag="${dockerrepository}:${dockerdefaultplatformos:-$baseOS}.${baseDistro}.${baseVersion}.${BASEARCH}${BASEARCHVARIANT:+$BASEARCHVARIANT}${DEVTAG:+.$DEVTAG}"
   echo -e "going to build ${tag}\n"
   docker build \
-    --platform="${baseOS}/${BASEARCH}${BASEARCHVARIANT:+/$BASEARCHVARIANT}" \
     --build-arg="BASEARCH=${BASEARCH}${BASEARCHVARIANT:+$BASEARCHVARIANT}" \
     --build-arg="targetos=${targetos:-$baseOS}" \
     --build-arg="targetproc=${targetproc}" \
     --tag "${tag}" . \
   && builtTags+=("${tag}") \
   && builtPlatformOs+=("${dockerdefaultplatformos:-$baseOS}") \
-  && builtPlatformArch+=("${BASEARCH:+--arch $BASEARCH} ${BASEARCHVARIANT:+--variant $BASEARCHVARIANT}") \
+  && builtPlatformArch+=("${BASEARCH:+--arch $BASEARCH}${BASEARCHVARIANT:+ --variant $BASEARCHVARIANT}") \
   && [[ $nodist -ne 1 ]] && docker push ${tag} || echo
+    # --platform="${baseOS}/${BASEARCH}${BASEARCHVARIANT:+/$BASEARCHVARIANT}" \
 }
 
 # Build amd64 image if not disabled

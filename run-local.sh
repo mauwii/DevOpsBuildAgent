@@ -34,7 +34,7 @@ else
   targetproc='x64'
 fi
 
-DOCKER_DEFAULT_PLATFORM="${baseos}/${dockerdefaultplatformarch}${dockerdefaultplatformarchvariant:+$dockerdefaultplatformarchvariant}"
+DOCKER_DEFAULT_PLATFORM="${baseos}/${dockerdefaultplatformarch}${dockerdefaultplatformarchvariant:+/$dockerdefaultplatformarchvariant}"
 tag="${baseos}.${baseDistro}.${baseVersion}.${dockerdefaultplatformarch}${dockerdefaultplatformarchvariant:+$dockerdefaultplatformarchvariant}${devtag:+.$devtag}"
 dockerimage="${dockerrepository}:${tag}"
 
