@@ -1,6 +1,3 @@
-.vscode
-.dccache
-build.sh
-build-1804.sh
-run-local.sh
-.envrc
+*
+# whitelist start.sh
+!start.sh
