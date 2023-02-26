@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM --platform=${TARGETPLATFORM} ubuntu:20.04
+FROM ubuntu:20.04
 
 # Prepare apt for buildkit cache
 RUN rm -f /etc/apt/apt.conf.d/docker-clean \
