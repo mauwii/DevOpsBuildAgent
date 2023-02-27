@@ -1,0 +1,76 @@
+trigger:
+  paths:
+    include:
+      - Dockerfile
+      - start.sh
+
+schedules:
+  - cron: '0 0 * * *'
+    displayName: Nightly Build
+    always: true
+    branches:
+      include:
+        - main
+
+variables:
+  - name: baseOS
+    value: 'linux'
+  - name: baseDistro
+    value: 'ubuntu'
+  - name: baseVersion
+    value: '20.04'
+  - name: dockerRegistry
+    value: 'docker.io'
+  - name: dockerhubuser
+    value: 'mauwii'
+  - name: dockerimage
+    value: 'devopsbuildagent'
+  - name: DOCKER_BUILDKIT
+    value: '1'
+
+pool:
+  vmImage: ubuntu-latest
+
+jobs:
+  - job:
+    strategy:
+      matrix:
+        amd64:
+          arch: 'amd64'
+          targetProc: 'x64'
+        arm64:
+          arch: 'arm64'
+          targetProc: 'arm64'
+    steps:
+      - task: Docker@2
+        inputs:
+          containerRegistry: 'docker-mauwii'
+          command: 'login'
+
+      - bash: 'echo "##vso[task.setvariable variable=TAG]$(baseOS).$(baseDistro).$(baseVersion).$(arch).${DEVTAG:-$(Build.BuildId)}"'
+        displayName: 'Set $(arch) tag'
+        ${{ if not(eq(variables['Build.SourceBranch'], 'refs/heads/main')) }}:
+          env:
+            DEVTAG: 'dev'
+        ${{ if and(eq(variables['Build.Reason'], 'Schedule'), eq(variables['Build.SourceBranch'], 'refs/heads/main')) }}:
+          env:
+            DEVTAG: 'nightly'
+
+      - bash: |
+          docker run \
+            --privileged \
+            --rm \
+            tonistiigi/binfmt \
+            --install all
+
+      - task: Docker@2
+        inputs:
+          containerRegistry: 'docker-mauwii'
+          repository: '$(dockerimage)'
+          command: 'build'
+          Dockerfile: 'Dockerfile'
+          tags: '$(TAG)'
+          arguments: |
+            --platform linux/$(arch)
+            --build-arg targetproc=$(targetProc)
+            --build-arg BASE_ARCH=$(arch)
